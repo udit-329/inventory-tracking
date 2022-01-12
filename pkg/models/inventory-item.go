@@ -1,15 +1,15 @@
 package models
 
 import (
-	"inventory-tracking/inventory-tracking/pkg/config"
+	"inventory-tracking/pkg/config"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 var db *gorm.DB
 
 type Item struct {
-	gorm.model
+	gorm.Model
 	Name     string
 	Quantity int64
 	Location string
@@ -18,4 +18,10 @@ type Item struct {
 func init() {
 	config.Connect()
 	db = config.GetDB()
+	db.AutoMigrate(&Item{})
+}
+
+func (item *Item) CreateItem() *Item {
+	db.Create(&item)
+	return item
 }
