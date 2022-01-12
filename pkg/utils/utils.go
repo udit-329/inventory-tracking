@@ -10,7 +10,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const PROJECTDIRNAME = "inventory-tracking"
+//PROJECTNAME refers to the project name (base directory).
+const PROJECTNAME string = "inventory-tracking"
 
 func ParseBody(request *http.Request, x interface{}) {
 	if body, err := ioutil.ReadAll(request.Body); err == nil {
@@ -20,8 +21,9 @@ func ParseBody(request *http.Request, x interface{}) {
 	}
 }
 
+//Loads the environment variables from .env file in root folder.
 func loadEnv() {
-	projectName := regexp.MustCompile(`^(.*` + PROJECTDIRNAME + `)`)
+	projectName := regexp.MustCompile("^(.*" + PROJECTNAME + ")")
 	currentWorkDir, err := os.Getwd()
 	//add error handling
 	if err != nil {
@@ -32,6 +34,7 @@ func loadEnv() {
 	err = godotenv.Load(rootPath + "/.env")
 }
 
+//GetEnvVariable takes a key as parameter and returns the associated value from environment variables.
 func GetEnvVariable(key string) string {
 	loadEnv()
 	return os.Getenv(key)
