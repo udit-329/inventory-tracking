@@ -4,38 +4,14 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"os"
-	"regexp"
-
-	"github.com/joho/godotenv"
 )
 
-//PROJECTNAME refers to the project name (base directory).
-const PROJECTNAME string = "inventory-tracking"
-
-func ParseBody(request *http.Request, x interface{}) {
-	if body, err := ioutil.ReadAll(request.Body); err == nil {
-		if err := json.Unmarshal([]byte(body), x); err != nil {
-			return
-		}
-	}
-}
-
-//Loads the environment variables from .env file in root folder.
-func loadEnv() {
-	projectName := regexp.MustCompile("^(.*" + PROJECTNAME + ")")
-	currentWorkDir, err := os.Getwd()
-	//add error handling
+//ParseBody takes in an http request and a pointer to an object, and parses the request body.
+//The parsed JSON body is stored in the original object whose reference is passed.
+func ParseBody(r *http.Request, obj interface{}) {
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-
+		return
 	}
-	//Root path of the project
-	rootPath := string(projectName.Find([]byte(currentWorkDir)))
-	err = godotenv.Load(rootPath + "/.env")
-}
-
-//GetEnvVariable takes a key as parameter and returns the associated value from environment variables.
-func GetEnvVariable(key string) string {
-	loadEnv()
-	return os.Getenv(key)
+	json.Unmarshal([]byte(body), obj)
 }
