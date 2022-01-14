@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"inventory-tracking/pkg/controllers"
+	"inventory-tracking/backend/controllers"
 
 	"github.com/gorilla/mux"
 )
@@ -12,6 +12,8 @@ func RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/get/{id}", controllers.GetItemByID).Methods("GET")
 	router.HandleFunc("/get", controllers.GetItems).Methods("GET")
 	router.HandleFunc("/update/{id}", controllers.UpdateItem).Methods("PUT")
+	router.HandleFunc("/update/{id}", controllers.HandlePreFlightCors).Methods("OPTIONS")
 	router.HandleFunc("/delete/{id}", controllers.DeleteItem).Methods("DELETE")
+	router.HandleFunc("/delete/{id}", controllers.HandlePreFlightCors).Methods("OPTIONS")
 	router.HandleFunc("/export", controllers.ExportItems).Methods("GET")
 }

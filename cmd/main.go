@@ -1,7 +1,7 @@
 package main
 
 import (
-	"inventory-tracking/pkg/routes"
+	"inventory-tracking/backend/routes"
 	"log"
 	"net/http"
 
@@ -10,7 +10,8 @@ import (
 
 func main() {
 	router := mux.NewRouter()
+	mux.CORSMethodMiddleware(router)
 	routes.RegisterRoutes(router)
 	http.Handle("/", router)
-	log.Fatal(http.ListenAndServe("localhost:8080", router))
+	log.Fatal(http.ListenAndServe(":8080", router))
 }

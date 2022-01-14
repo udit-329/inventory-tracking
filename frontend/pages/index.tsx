@@ -1,0 +1,75 @@
+import React, { useEffect, useState } from 'react';
+import Head from 'next/head'
+import Image from 'next/image'
+import styles from '../styles/Home.module.css'
+import { Box, Button } from "@chakra-ui/react";
+
+const getItems = async () => {
+  const url = "http://localhost:8080/get";
+  const data = await (
+      await fetch(url, {
+        method: "GET",
+        mode: "cors",
+      })
+    ).json();
+  console.log(data)
+  return (data);
+};
+
+const onClick = async (url: string, method: string, setData: any) => {
+  const response = await (
+    await fetch(url, {
+      method: method,
+    })
+  )
+  setData(await getItems())
+}
+
+
+
+const Home = () => {
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    (async () => setData(await getItems()))();
+  }, []);
+
+  return (
+    <div>
+      {data.map((properties) => (
+        <Box maxW='sm' borderWidth='1px' rounded='md' borderRadius='lg' margin='auto' marginTop='5px' overflow='hidden'>
+          <Box p='6'>
+            <Box
+              mt='1'
+              fontWeight='semibold'
+              as='h4'
+            >
+              {properties.Name}
+            </Box>
+            
+            <Box color='gray.900' fontSize='m'>
+              {`Quantity: ${properties.Quantity}`}
+            </Box>
+            <Box color='gray.900' fontSize='m'>
+            {`Location: ${properties.Location}`}
+            </Box>
+            <Box
+              color='gray.500'
+              letterSpacing='wide'
+              fontSize='xs'
+              textTransform='uppercase'
+            >
+              {`product id: ${properties.ID}`}
+            </Box>
+            <Button colorScheme='red' variant='solid' onClick={() => onClick(`http://localhost:8080/delete/${properties.ID}`, "DELETE", setData)}>
+              Delete
+            </Button>
+          </Box>
+        </Box>
+      ))}
+    </div>
+  );
+};
+
+export default Home;

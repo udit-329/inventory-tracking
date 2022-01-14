@@ -10,14 +10,32 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"inventory-tracking/pkg/models"
-	"inventory-tracking/pkg/utils"
+	"inventory-tracking/backend/models"
+	"inventory-tracking/backend/utils"
 )
 
 //AddItem adds a new item to the database.
 func AddItem(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	createItem := models.Item{}
 	utils.ParseBody(r, &createItem)
+
+	//Allow default location.
+	if createItem.Location == "" {
+		createItem.Location = "Default"
+	}
+	//Do not allow empty values.
+	if createItem.Name == "" {
+		w.WriteHeader(http.StatusInternalServerError)
+		res, _ := json.Marshal(map[string]string{"Error": "Name cannot be empty."})
+		w.Write(res)
+	}
+	if createItem.Quantity == 0 {
+		w.WriteHeader(http.StatusInternalServerError)
+		res, _ := json.Marshal(map[string]string{"Error": "Quantity cannot be 0."})
+		w.Write(res)
+	}
 
 	item := createItem.CreateItem()
 	res, err := json.Marshal(item)
@@ -31,6 +49,9 @@ func AddItem(w http.ResponseWriter, r *http.Request) {
 
 //GetItemByID fetches an item from the database by its ID.
 func GetItemByID(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 
@@ -44,25 +65,32 @@ func GetItemByID(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusOK)
 	}
-	w.Header().Set("Content-Type", "application/json")
+
 	w.Write(res)
 }
 
 //GetItems fetches all the items from the database.
 func GetItems(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	allItems := models.GetItems()
 	res, err := json.Marshal(allItems)
+
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		w.WriteHeader(http.StatusOK)
 	}
-	w.Header().Set("Content-Type", "application/json")
+
 	w.Write(res)
 }
 
 //UpdateItem updates an item in the database.
 func UpdateItem(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	updateItem := models.Item{}
 	utils.ParseBody(r, &updateItem)
 
@@ -91,12 +119,15 @@ func UpdateItem(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusOK)
 	}
-	w.Header().Set("Content-Type", "application/json")
+
 	w.Write(res)
 }
 
 //DeleteItem deletes an item from the database by its ID.
 func DeleteItem(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 	id, _ := strconv.ParseInt(idStr, 0, 0)
@@ -109,12 +140,16 @@ func DeleteItem(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusOK)
 	}
-	w.Header().Set("Content-Type", "application/json")
+
 	w.Write(res)
 }
 
 //ExportItems generates and exports a CSV file with all product data.
 func ExportItems(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/csv")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Content-Disposition", "attachment; filename=wow.csv")
+
 	allItems := models.GetItems()
 
 	//We Marshal and Unmarshal into a generic list of maps to get access to id and creation/updation dates.
@@ -157,8 +192,15 @@ func ExportItems(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	writer.Flush()
-
-	w.Header().Set("Content-Type", "text/csv")
-	w.Header().Add("Content-Disposition", "attachment; filename=wow.csv")
 	w.Write(buffer.Bytes())
+}
+
+//HandlePreFlightCors is a generic function to handle pre-flight requests. DELETE and PUT methods are allowed.
+func HandlePreFlightCors(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "DELETE,PUT")
+	w.WriteHeader(http.StatusNoContent)
+	res, _ := json.Marshal(map[string]string{"Status": "204"})
+	w.Write(res)
 }

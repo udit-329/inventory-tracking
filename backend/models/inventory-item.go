@@ -1,7 +1,7 @@
 package models
 
 import (
-	"inventory-tracking/pkg/config"
+	"inventory-tracking/backend/config"
 
 	"gorm.io/gorm"
 )
