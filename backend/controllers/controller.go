@@ -31,9 +31,9 @@ func AddItem(w http.ResponseWriter, r *http.Request) {
 		res, _ := json.Marshal(map[string]string{"Error": "Name cannot be empty."})
 		w.Write(res)
 	}
-	if createItem.Quantity == 0 {
+	if createItem.Quantity < 0 {
 		w.WriteHeader(http.StatusInternalServerError)
-		res, _ := json.Marshal(map[string]string{"Error": "Quantity cannot be 0."})
+		res, _ := json.Marshal(map[string]string{"Error": "Quantity cannot be less than 0."})
 		w.Write(res)
 	}
 
@@ -148,7 +148,7 @@ func DeleteItem(w http.ResponseWriter, r *http.Request) {
 func ExportItems(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/csv")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Add("Content-Disposition", "attachment; filename=wow.csv")
+	w.Header().Add("Content-Disposition", "attachment; filename=data.csv")
 
 	allItems := models.GetItems()
 

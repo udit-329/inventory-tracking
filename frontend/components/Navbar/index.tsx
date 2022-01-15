@@ -1,5 +1,6 @@
 import {
     Box,
+    Button,
     Flex,
     Text,
     useColorModeValue,
@@ -7,7 +8,18 @@ import {
   } from "@chakra-ui/react";
   
   import DesktopNav from "./DesktopNav";
+  import FileSaver from 'file-saver';
   
+  const exportData = async (url: string, method: string) => {
+    fetch(url, { 
+      method: method,
+    }).then(function(response) {
+      return response.blob();
+    }).then(function(blob) {
+      FileSaver.saveAs(blob, 'data.csv');
+    })
+  }
+
   export default function Navbar() {  
     return (
       <Box>
@@ -35,7 +47,10 @@ import {
             <Flex display={{ base: "none", md: "flex" }} ml={10}>
               <DesktopNav />
             </Flex>
-          </Flex>     
+          </Flex>   
+          <Button colorScheme='green' variant='solid' onClick={() => exportData(`http://localhost:8080/export`, "GET")}>
+              Export
+            </Button>  
         </Flex>
       </Box>
     );

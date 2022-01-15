@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import Link from 'next/link'
 import { Box, Button } from "@chakra-ui/react";
 
 const getItems = async () => {
@@ -12,7 +10,6 @@ const getItems = async () => {
         mode: "cors",
       })
     ).json();
-  console.log(data)
   return (data);
 };
 
@@ -38,7 +35,7 @@ const Home = () => {
   return (
     <div>
       {data.map((properties) => (
-        <Box maxW='sm' borderWidth='1px' rounded='md' borderRadius='lg' margin='auto' marginTop='5px' overflow='hidden'>
+        <Box minW='sm' maxW='sm' borderWidth='1px' rounded='md' borderRadius='lg' float='left' marginLeft='2%' marginTop='5px' overflow='hidden'>
           <Box p='6'>
             <Box
               mt='1'
@@ -62,9 +59,17 @@ const Home = () => {
             >
               {`product id: ${properties.ID}`}
             </Box>
-            <Button colorScheme='red' variant='solid' onClick={() => onClick(`http://localhost:8080/delete/${properties.ID}`, "DELETE", setData)}>
-              Delete
-            </Button>
+            <div>
+                <Link href={`update/${properties.ID}`}>
+                  <Button colorScheme='green' variant='solid'>
+                    Update
+                  </Button>
+                </Link>
+
+                <Button colorScheme='red' marginLeft='2%' variant='solid' onClick={() => onClick(`http://localhost:8080/delete/${properties.ID}`, "DELETE", setData)}>
+                  Delete
+                </Button>
+            </div>
           </Box>
         </Box>
       ))}
