@@ -42,14 +42,14 @@ const Home = () => {
               fontWeight='semibold'
               as='h4'
             >
-              {properties.Name}
+              {properties["Name"]}
             </Box>
             
             <Box color='gray.900' fontSize='m'>
-              {`Quantity: ${properties.Quantity}`}
+              {`Quantity: ${properties["Quantity"]}`}
             </Box>
             <Box color='gray.900' fontSize='m'>
-            {`Location: ${properties.Location}`}
+            {`Location: ${properties["Location"]}`}
             </Box>
             <Box
               color='gray.500'
@@ -57,10 +57,10 @@ const Home = () => {
               fontSize='xs'
               textTransform='uppercase'
             >
-              {`product id: ${properties.ID}`}
+              {`product id: ${properties["ID"]}`}
             </Box>
             <div>
-                <Link href={`update/${properties.ID}`}>
+                <Link href={`update/${properties["ID"]}`}>
                   <Button colorScheme='green' variant='solid'>
                     Update
                   </Button>
