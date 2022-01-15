@@ -66,7 +66,7 @@ const Home = () => {
                   </Button>
                 </Link>
 
-                <Button colorScheme='red' marginLeft='2%' variant='solid' onClick={() => onClick(`http://localhost:8080/delete/${properties.ID}`, "DELETE", setData)}>
+                <Button colorScheme='red' marginLeft='2%' variant='solid' onClick={() => onClick(`http://localhost:8080/delete/${properties["ID"]}`, "DELETE", setData)}>
                   Delete
                 </Button>
             </div>
