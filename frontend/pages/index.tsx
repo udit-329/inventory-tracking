@@ -35,7 +35,7 @@ const Home = () => {
   return (
     <div>
       {data.map((properties) => (
-        <Box minW='sm' maxW='sm' borderWidth='1px' rounded='md' borderRadius='lg' float='left' marginLeft='2%' marginTop='5px' overflow='hidden'>
+        <Box key={properties["ID"]} minW='sm' maxW='sm' borderWidth='1px' rounded='md' borderRadius='lg' float='left' marginLeft='2%' marginTop='5px' overflow='hidden'>
           <Box p='6'>
             <Box
               mt='1'
