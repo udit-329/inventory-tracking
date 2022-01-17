@@ -6,6 +6,7 @@ import (
 	"inventory-tracking/backend/pkg/routes"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 )
@@ -17,7 +18,8 @@ func main() {
 	db := config.Connect()
 	dbHandler := controllers.NewBaseHandler(db)
 
+	port := os.Getenv("PORT")
 	routes.RegisterRoutes(dbHandler, router)
 	http.Handle("/", router)
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
