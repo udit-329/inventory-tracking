@@ -9,13 +9,27 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"gorm.io/gorm"
 
-	"inventory-tracking/backend/models"
-	"inventory-tracking/backend/utils"
+	"inventory-tracking/backend/pkg/models"
+	"inventory-tracking/backend/pkg/utils"
 )
 
+// BaseHandler will hold everything that controller needs
+type BaseHandler struct {
+	db *gorm.DB
+}
+
+//NewBaseHandler returns a new BaseHandler object.
+func NewBaseHandler(db *gorm.DB) *BaseHandler {
+	db.AutoMigrate(&models.Item{})
+	return &BaseHandler{
+		db: db,
+	}
+}
+
 //AddItem adds a new item to the database.
-func AddItem(w http.ResponseWriter, r *http.Request) {
+func (handler *BaseHandler) AddItem(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	createItem := models.Item{}
@@ -37,7 +51,7 @@ func AddItem(w http.ResponseWriter, r *http.Request) {
 		w.Write(res)
 	}
 
-	item := createItem.CreateItem()
+	item := createItem.CreateItem(handler.db)
 	res, err := json.Marshal(item)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -48,7 +62,7 @@ func AddItem(w http.ResponseWriter, r *http.Request) {
 }
 
 //GetItemByID fetches an item from the database by its ID.
-func GetItemByID(w http.ResponseWriter, r *http.Request) {
+func (handler *BaseHandler) GetItemByID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
@@ -58,7 +72,7 @@ func GetItemByID(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.ParseInt(idStr, 0, 0)
 
 	//Don't get the database.
-	details, _ := models.GetItemByID(id)
+	details, _ := models.GetItemByID(handler.db, id)
 	res, err := json.Marshal(details)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -70,11 +84,11 @@ func GetItemByID(w http.ResponseWriter, r *http.Request) {
 }
 
 //GetItems fetches all the items from the database.
-func GetItems(w http.ResponseWriter, r *http.Request) {
+func (handler *BaseHandler) GetItems(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	allItems := models.GetItems()
+	allItems := models.GetItems(handler.db)
 	res, err := json.Marshal(allItems)
 
 	if err != nil {
@@ -87,7 +101,7 @@ func GetItems(w http.ResponseWriter, r *http.Request) {
 }
 
 //UpdateItem updates an item in the database.
-func UpdateItem(w http.ResponseWriter, r *http.Request) {
+func (handler *BaseHandler) UpdateItem(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
@@ -98,7 +112,7 @@ func UpdateItem(w http.ResponseWriter, r *http.Request) {
 	idStr := vars["id"]
 	id, _ := strconv.ParseInt(idStr, 0, 0)
 
-	itemDetails, db := models.GetItemByID(id)
+	itemDetails, db := models.GetItemByID(handler.db, id)
 
 	//Check for updated fields.
 	if updateItem.Name != "" {
@@ -124,7 +138,7 @@ func UpdateItem(w http.ResponseWriter, r *http.Request) {
 }
 
 //DeleteItem deletes an item from the database by its ID.
-func DeleteItem(w http.ResponseWriter, r *http.Request) {
+func (handler *BaseHandler) DeleteItem(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
@@ -132,7 +146,7 @@ func DeleteItem(w http.ResponseWriter, r *http.Request) {
 	idStr := vars["id"]
 	id, _ := strconv.ParseInt(idStr, 0, 0)
 
-	item := models.DeleteItem(id)
+	item := models.DeleteItem(handler.db, id)
 
 	res, err := json.Marshal(item)
 	if err != nil {
@@ -145,12 +159,12 @@ func DeleteItem(w http.ResponseWriter, r *http.Request) {
 }
 
 //ExportItems generates and exports a CSV file with all product data.
-func ExportItems(w http.ResponseWriter, r *http.Request) {
+func (handler *BaseHandler) ExportItems(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/csv")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Add("Content-Disposition", "attachment; filename=data.csv")
 
-	allItems := models.GetItems()
+	allItems := models.GetItems(handler.db)
 
 	//We Marshal and Unmarshal into a generic list of maps to get access to id and creation/updation dates.
 	res, _ := json.Marshal(allItems)
@@ -196,7 +210,7 @@ func ExportItems(w http.ResponseWriter, r *http.Request) {
 }
 
 //HandlePreFlightCors is a generic function to handle pre-flight requests. DELETE and PUT methods are allowed.
-func HandlePreFlightCors(w http.ResponseWriter, r *http.Request) {
+func (handler *BaseHandler) HandlePreFlightCors(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "DELETE,PUT")

@@ -11,13 +11,11 @@ import (
 	"gorm.io/gorm"
 )
 
-var db *gorm.DB
-
 //PROJECTNAME refers to the project name (base directory).
 const PROJECTNAME string = "inventory-tracking"
 
-//Connect establishes a connection to the database.
-func Connect() {
+//Connect establishes a connection and returns a gorm database.
+func Connect() *gorm.DB {
 	dbHost := os.Getenv("DB_HOST")
 	dbName := os.Getenv("DB_NAME")
 	dbUser := os.Getenv("DB_USER")
@@ -26,15 +24,10 @@ func Connect() {
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbUser, dbPass, dbHost, dbPort, dbName)
 
-	database, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Panic(err)
 	}
-	db = database
-}
-
-//GetDB retuns a gorm database.
-func GetDB() *gorm.DB {
 	return db
 }
 
