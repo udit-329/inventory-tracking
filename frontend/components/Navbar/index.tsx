@@ -42,7 +42,7 @@ import {
               fontWeight={800}
               color="green"
             >
-              Inventory Tracking
+              InvTrack
             </Text>    
             <Flex display={{ base: "none", md: "flex" }} ml={10}>
               <DesktopNav />
