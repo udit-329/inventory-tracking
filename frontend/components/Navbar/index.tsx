@@ -48,7 +48,7 @@ import {
               <DesktopNav />
             </Flex>
           </Flex>   
-          <Button colorScheme='green' variant='solid' onClick={() => exportData(`http://localhost:8080/export`, "GET")}>
+          <Button colorScheme='green' variant='solid' onClick={() => exportData(`https://inventory-tracking-uk.herokuapp.com/export`, "GET")}>
               Export
             </Button>  
         </Flex>

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { Box, Button } from "@chakra-ui/react";
 
 const getItems = async () => {
-  const url = "http://localhost:8080/get";
+  const url = "https://inventory-tracking-uk.herokuapp.com/get";
   const data = await (
       await fetch(url, {
         method: "GET",
@@ -66,7 +66,7 @@ const Home = () => {
                   </Button>
                 </Link>
 
-                <Button colorScheme='red' marginLeft='2%' variant='solid' onClick={() => onClick(`http://localhost:8080/delete/${properties["ID"]}`, "DELETE", setData)}>
+                <Button colorScheme='red' marginLeft='2%' variant='solid' onClick={() => onClick(`https://inventory-tracking-uk.herokuapp.com/delete/${properties["ID"]}`, "DELETE", setData)}>
                   Delete
                 </Button>
             </div>

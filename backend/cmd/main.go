@@ -19,6 +19,7 @@ func main() {
 	dbHandler := controllers.NewBaseHandler(db)
 
 	port := os.Getenv("PORT")
+
 	routes.RegisterRoutes(dbHandler, router)
 	http.Handle("/", router)
 	log.Fatal(http.ListenAndServe(":"+port, router))

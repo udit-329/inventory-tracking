@@ -29,7 +29,7 @@ const Update: NextPage = () => {
 
     const onSubmit = async (values: Record<string, string | number>) => {
       putReq(
-          `http://localhost:8080/update/${id}`,
+          `https://inventory-tracking-uk.herokuapp.com/update/${id}`,
           values
         ).then(function(success) {
           toast({

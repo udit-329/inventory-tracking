@@ -27,7 +27,7 @@ const Add: NextPage = () => {
   
     const onSubmit = async (values: Record<string, string | number>) => {
       postReq(
-          "http://localhost:8080/add",
+          "https://inventory-tracking-uk.herokuapp.com/add",
           values
         ).then(function(success) {
           toast({
