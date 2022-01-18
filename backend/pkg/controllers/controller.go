@@ -37,7 +37,7 @@ func (handler *BaseHandler) AddItem(w http.ResponseWriter, r *http.Request) {
 
 	//Allow default location.
 	if createItem.Location == "" {
-		createItem.Location = "Default"
+		createItem.Location = "N/A"
 	}
 	//Do not allow empty values.
 	if createItem.Name == "" {
