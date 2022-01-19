@@ -14,15 +14,20 @@ type Item struct {
 	Location string
 }
 
+// TestBaseHandler holds a gorm database connection.
 type TestBaseHandler struct {
 	DB *gorm.DB
 }
 
-func CreateTestDB() *TestBaseHandler {
-	const DBConnection = "file::memory:?cache=shared"
+// CreateTestDB returns an in-memory sqlite database connection used for testing.
+func CreateTestDBHandler() *TestBaseHandler {
+	db := CreateGormDB()
+	return &TestBaseHandler{DB: db}
+}
 
+func CreateGormDB() *gorm.DB {
+	const DBConnection = "file::memory:?cache=shared"
 	db, _ := gorm.Open(sqlite.Open(DBConnection), &gorm.Config{})
 	db.AutoMigrate(&Item{})
-
-	return &TestBaseHandler{DB: db}
+	return db
 }

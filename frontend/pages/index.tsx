@@ -66,7 +66,7 @@ const Home = () => {
                   </Button>
                 </Link>
 
-                <Button colorScheme='red' marginLeft='2%' variant='solid' onClick={() => onClick(`https://inventory-tracking-uk.herokuapp.com/delete/${properties["ID"]}`, "DELETE", setData)}>
+                <Button colorScheme='red' marginLeft='2%' variant='solid' onClick={() => onClick(`https://inventory-tracking-uk.herokuapp.com/delete?id=${properties["ID"]}`, "DELETE", setData)}>
                   Delete
                 </Button>
             </div>

@@ -8,14 +8,13 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gorilla/mux"
 	"gorm.io/gorm"
 
 	"inventory-tracking/backend/pkg/models"
 	"inventory-tracking/backend/pkg/utils"
 )
 
-// BaseHandler will hold everything that controller needs
+// BaseHandler holds a gorm database connection.
 type BaseHandler struct {
 	db *gorm.DB
 }
@@ -62,35 +61,27 @@ func (handler *BaseHandler) AddItem(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
-//GetItemByID fetches an item from the database by its ID.
-func (handler *BaseHandler) GetItemByID(w http.ResponseWriter, r *http.Request) {
+//GetItems fetches an item by its ID or all the items if no query params are provided.
+func (handler *BaseHandler) GetItem(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	vars := mux.Vars(r)
-	idStr := vars["id"]
+	idStr := r.URL.Query().Get("id")
 
-	id, _ := strconv.ParseInt(idStr, 0, 0)
+	var res []byte
+	var err error
 
-	//Don't get the database.
-	details, _ := models.GetItemByID(handler.db, id)
-	res, err := json.Marshal(details)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+	if idStr != "" {
+		id, _ := strconv.ParseInt(idStr, 0, 0)
+
+		//Don't get the database.
+		details, _ := models.GetItemByID(handler.db, id)
+		res, err = json.Marshal(details)
+
 	} else {
-		w.WriteHeader(http.StatusOK)
+		allItems := models.GetItems(handler.db)
+		res, err = json.Marshal(allItems)
 	}
-
-	w.Write(res)
-}
-
-//GetItems fetches all the items from the database.
-func (handler *BaseHandler) GetItems(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	allItems := models.GetItems(handler.db)
-	res, err := json.Marshal(allItems)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -109,8 +100,7 @@ func (handler *BaseHandler) UpdateItem(w http.ResponseWriter, r *http.Request) {
 	updateItem := models.Item{}
 	utils.ParseBody(r, &updateItem)
 
-	vars := mux.Vars(r)
-	idStr := vars["id"]
+	idStr := r.URL.Query().Get("id")
 	id, _ := strconv.ParseInt(idStr, 0, 0)
 
 	itemDetails, db := models.GetItemByID(handler.db, id)
@@ -143,8 +133,7 @@ func (handler *BaseHandler) DeleteItem(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	vars := mux.Vars(r)
-	idStr := vars["id"]
+	idStr := r.URL.Query().Get("id")
 	id, _ := strconv.ParseInt(idStr, 0, 0)
 
 	item := models.DeleteItem(handler.db, id)
