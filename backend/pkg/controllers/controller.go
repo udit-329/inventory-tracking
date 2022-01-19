@@ -39,16 +39,17 @@ func (handler *BaseHandler) AddItem(w http.ResponseWriter, r *http.Request) {
 	if createItem.Location == "" {
 		createItem.Location = "N/A"
 	}
-	//Do not allow empty values.
+	// Do not allow empty values.
 	if createItem.Name == "" {
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		res, _ := json.Marshal(map[string]string{"Error": "Name cannot be empty."})
 		w.Write(res)
-	}
-	if createItem.Quantity < 0 {
-		w.WriteHeader(http.StatusInternalServerError)
+		return
+	} else if createItem.Quantity < 0 {
+		w.WriteHeader(http.StatusBadRequest)
 		res, _ := json.Marshal(map[string]string{"Error": "Quantity cannot be less than 0."})
 		w.Write(res)
+		return
 	}
 
 	item := createItem.CreateItem(handler.db)

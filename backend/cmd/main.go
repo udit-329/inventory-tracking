@@ -20,6 +20,11 @@ func main() {
 
 	port := os.Getenv("PORT")
 
+	//Default port
+	if port == "" {
+		port = "8080"
+	}
+
 	routes.RegisterRoutes(dbHandler, router)
 	http.Handle("/", router)
 	log.Fatal(http.ListenAndServe(":"+port, router))
